@@ -1,14 +1,13 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="{%  static 'style.css' %}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
          <!-- Bootstrap CSS CDN -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
@@ -18,11 +17,10 @@
     <!-- Sidebar Holder -->
     <nav id="sidebar">
         <div class="sidebar-header">
-            <h3>Bootstrap Sidebar</h3>
+            <h3>내 장소</h3>
         </div>
 
         <ul class="list-unstyled components">
-            <p>Dummy Heading</p>
             <li class="active">
                 <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">Home</a>
                 <ul class="collapse list-unstyled" id="homeSubmenu">
@@ -63,29 +61,28 @@
                 <div class="navbar-header">
                     <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
                         <i class="glyphicon glyphicon-align-left"></i>
-                        <span>Toggle Sidebar</span>
+                        <span>장소</span>
                     </button>
                 </div>
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#">Page</a></li>
-                        <li><a href="#">Page</a></li>
-                        <li><a href="#">Page</a></li>
-                        <li><a href="#">Page</a></li>
+                        <li><a href="#">프로필</a></li>
+                        <li><a href="#">로그아웃</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
 
-                    <h2>Collapsible Sidebar Using Bootstrap 3</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <h2>Collapsible Sidebar Using Bootstrap 3</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 
     <div id="map"></div>
     </div>
 </div>
+
 <script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0VuxLCHgrHGPT1SitPMHecNCZHsbXe9A&callback=initAutocomplete&libraries=places&v=weekly"
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0VuxLCHgrHGPT1SitPMHecNCZHsbXe9A&callback=initMap&libraries=places&v=weekly&censor=true"
   defer
 ></script>
 <!-- jQuery CDN -->
@@ -93,30 +90,34 @@
  <!-- Bootstrap Js CDN -->
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-
-<script>
-    // Initialize and add the map
+<script type="text/javascript">
     function initMap() {
+        // The map, centered at Uluru
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: {lat: 37.5980032, lng: 126.6843648}
+        });
       // The location of Uluru
-      const uluru = { lat: -25.344, lng: 131.036 };
-      // The map, centered at Uluru
-      const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 4,
-        center: uluru,
-      });
-      // The marker, positioned at Uluru
-      const marker = new google.maps.Marker({
-        position: uluru,
-        map: map,
-      });
-    }
+        if (navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(
+              function(pos) {
+                const uluru = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+                alert("현재 위치는 : " + uluru.lat + uluru.lng);
+                map.setCenter(uluru);
+                const marker = new google.maps.Marker({
+                    position: uluru,
+                    map: map,
+                })
+            });
+          }else {
+              alert('GPS를 지원하지 않습니다');
+          }
 
-     $(document).ready(function () {
-         $('#sidebarCollapse').on('click', function () {
-             $('#sidebar').toggleClass('active');
-         });
-         initMap()
-     });
+    }
+    $('#sidebarCollapse').on('click', function () {
+        $('#sidebar').toggleClass('active');
+    });
+
 
 </script>
 </body>
