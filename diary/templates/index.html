@@ -73,6 +73,7 @@
                         <li><a href="#">Page</a></li>
                         <li><a href="#">Page</a></li>
                         <li><a href="#">Page</a></li>
+                        <li>Welcome {{ user.username }}</li>
                     </ul>
                 </div>
             </div>
@@ -93,7 +94,6 @@
  <!-- Bootstrap Js CDN -->
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-
 <script>
     // Initialize and add the map
     function initMap() {
@@ -109,6 +109,14 @@
         position: uluru,
         map: map,
       });
+      
+      // 지도 클릭하면 마커 생성
+      map.addListener("click", (e) => {
+        new google.maps.Marker({
+            position: e.latLng,
+            map: map,
+        });
+      })
     }
 
      $(document).ready(function () {

@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'social_django',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -84,10 +85,6 @@ DATABASES = {
         'USER': 'dundun',
         'PASSWORD': 'dundun',
     }
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
 }
 
 
@@ -109,6 +106,25 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# AUTH0 Settings
+SOCIAL_AUTH_TRAILING_SLASH = False  # Remove trailing slash from routes
+SOCIAL_AUTH_AUTH0_DOMAIN = 'uc0.us.auth0.com'
+SOCIAL_AUTH_AUTH0_KEY = '4z8TuVfm4KLg2X7NAIHKTFVQX4vAAfjF'
+SOCIAL_AUTH_AUTH0_SECRET = 'Dn_FyyaUJ_xmSRz_fepsJFhKNXxBWRgis7SzPX6fOVl2gv4voW5L98n4UjqfOQv3'
+
+SOCIAL_AUTH_AUTH0_SCOPE = [
+    'openid',
+    'profile',
+    'email'
+]
+
+AUTHENTICATION_BACKENDS = {
+    'diary.auth0backend.Auth0',
+    'django.contrib.auth.backends.ModelBackend'
+}
+
+LOGIN_URL = '/login/auth0'
+LOGIN_REDIRECT_URL = '/dashboard'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -127,5 +143,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/diary/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
