@@ -1,14 +1,13 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="{%  static 'style.css' %}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
          <!-- Bootstrap CSS CDN -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
@@ -18,11 +17,10 @@
     <!-- Sidebar Holder -->
     <nav id="sidebar">
         <div class="sidebar-header">
-            <h3>Bootstrap Sidebar</h3>
+            <h3>내 장소</h3>
         </div>
 
         <ul class="list-unstyled components">
-            <p>Dummy Heading</p>
             <li class="active">
                 <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">Home</a>
                 <ul class="collapse list-unstyled" id="homeSubmenu">
@@ -63,7 +61,7 @@
                 <div class="navbar-header">
                     <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
                         <i class="glyphicon glyphicon-align-left"></i>
-                        <span>Toggle Sidebar</span>
+                        <span>장소</span>
                     </button>
                 </div>
 
@@ -74,14 +72,22 @@
                         <li><a href="#">Page</a></li>
                         <li><a href="#">Page</a></li>
                         <li>Welcome {{ user.username }}</li>
+                        <li><a href="#">프로필</a></li>
+                        <li><a href="#">로그아웃</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
 
-                    <h2>Collapsible Sidebar Using Bootstrap 3</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
+        <h2>Collapsible Sidebar Using Bootstrap 3</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <input
+      id="pac-input"
+      class="controls"
+      type="text"
+      placeholder="Search Box"
+    />
+    <button onclick="initMap()">클릭</button>
     <div id="map"></div>
     <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -103,14 +109,16 @@
   </div>
     </div>
 </div>
+
 <script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0VuxLCHgrHGPT1SitPMHecNCZHsbXe9A&callback=initAutocomplete&libraries=places&v=weekly"
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0VuxLCHgrHGPT1SitPMHecNCZHsbXe9A&callback=initMap&libraries=places&v=weekly&censor=true"
   defer
 ></script>
 <!-- jQuery CDN -->
  <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
  <!-- Bootstrap Js CDN -->
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 
 <script>
     // Initialize and add the map
@@ -141,14 +149,71 @@
           console.log("Sdasdasd");
       })
       })
-    }
+  
+  
+<script type="text/javascript">
+    function initMap() {
+        const map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: -33.8688, lng: 151.2195 },
+        zoom: 13,
+        mapTypeId: "roadmap",
+      });
+        if (navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(
+                function(pos) {
+                    const uluru = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+                    // alert("현재 위치는 : " + uluru.lat + uluru.lng);
+                    map.setCenter(uluru);
+                });
+        }else {
+            alert('GPS를 지원하지 않습니다');
+        }
+        const input = document.getElementById("pac-input");
+        const autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.bindTo("bounds", map);
 
-     $(document).ready(function () {
-         $('#sidebarCollapse').on('click', function () {
-             $('#sidebar').toggleClass('active');
-         });
-         initMap()
-     });
+        // Specify just the place data fields that you need.
+        autocomplete.setFields(["place_id", "geometry", "name"]);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        const infowindow = new google.maps.InfoWindow();
+        const infowindowContent = document.getElementById("infowindow-content");
+        infowindow.setContent(infowindowContent);
+
+        const marker = new google.maps.Marker({ map: map });
+        marker.addListener("click", () => {
+            infowindow.open(map, marker);
+        });
+        autocomplete.addListener("place_changed", () => {
+            infowindow.close();
+            const place = autocomplete.getPlace();
+
+            if (!place.geometry) {
+              return;
+            }
+
+            if (place.geometry.viewport) {
+              map.fitBounds(place.geometry.viewport);
+            } else {
+              map.setCenter(place.geometry.location);
+              map.setZoom(17);
+            }
+            // Set the position of the marker using the place ID and location.
+            marker.setPlace({
+              placeId: place.place_id,
+              location: place.geometry.location,
+            });
+            marker.setVisible(true);
+            infowindowContent.children.namedItem("place-name").textContent = place.name;
+            infowindowContent.children.namedItem("place-id").textContent = place.place_id;
+            infowindowContent.children.namedItem("place-address").textContent = place.formatted_address;
+            infowindow.open(map, marker);
+        });
+    }
+    $('#sidebarCollapse').on('click', function () {
+        $('#sidebar').toggleClass('active');
+    });
+
 
 </script>
 </body>
