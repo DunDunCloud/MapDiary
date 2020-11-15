@@ -120,37 +120,23 @@
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 
-<script>
-    // Initialize and add the map
-    function initMap() {
-      // The location of Uluru
-      const uluru = { lat: -25.344, lng: 131.036 };
-      // The map, centered at Uluru
-      const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 4,
-        center: uluru,
-      });
-      
-    //   // The marker, positioned at Uluru
-    //   const marker = new google.maps.Marker({
-    //     position: uluru,
-    //     map: map,
-    //   });
-      
+<script>      
       // 지도 클릭하면 마커 생성
-      map.addListener("click", (e) => {
-        const marker = new google.maps.Marker({
-            position: e.latLng,
-            map: map,
-        });
+    //   map.addListener("click", (e) => {
+    //     const marker = new google.maps.Marker({
+    //         position: e.latLng,
+    //         map: map,
+    //     });
 
-        marker.addListener("click", () => {
-          $('#myModal').modal("show");
-          console.log("Sdasdasd");
-      })
-      })
+    //     marker.addListener("click", () => {
+    //       $('#myModal').modal("show");
+    //       console.log("Sdasdasd");
+    //   })
+    //   })
   
   
+</script>
+
 <script type="text/javascript">
     function initMap() {
         const map = new google.maps.Map(document.getElementById("map"), {
@@ -168,6 +154,21 @@
         }else {
             alert('GPS를 지원하지 않습니다');
         }
+
+        // 마커 생성 및 모달 띄우기 -유찬영
+        map.addListener("click", (e) => {
+            const marker = new google.maps.Marker({
+                position: e.latLng,
+                map: map,
+            });
+
+            marker.addListener("click", () => {
+                $('#myModal').modal("show");
+                console.log("Sdasdasd");
+            })
+        })
+
+
         const input = document.getElementById("pac-input");
         const autocomplete = new google.maps.places.Autocomplete(input);
         autocomplete.bindTo("bounds", map);
