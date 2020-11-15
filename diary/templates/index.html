@@ -83,6 +83,24 @@
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 
     <div id="map"></div>
+    <!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
     </div>
 </div>
 <script
@@ -104,18 +122,24 @@
         zoom: 4,
         center: uluru,
       });
-      // The marker, positioned at Uluru
-      const marker = new google.maps.Marker({
-        position: uluru,
-        map: map,
-      });
+      
+    //   // The marker, positioned at Uluru
+    //   const marker = new google.maps.Marker({
+    //     position: uluru,
+    //     map: map,
+    //   });
       
       // 지도 클릭하면 마커 생성
       map.addListener("click", (e) => {
-        new google.maps.Marker({
+        const marker = new google.maps.Marker({
             position: e.latLng,
             map: map,
         });
+
+        marker.addListener("click", () => {
+          $('#myModal').modal("show");
+          console.log("Sdasdasd");
+      })
       })
     }
 
