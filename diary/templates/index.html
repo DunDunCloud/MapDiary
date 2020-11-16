@@ -67,13 +67,13 @@
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
+                        <span>Welcome {{ user.username }}</span>
                         <li><a href="#">Page</a></li>
                         <li><a href="#">Page</a></li>
                         <li><a href="#">Page</a></li>
                         <li><a href="#">Page</a></li>
-                        <li>Welcome {{ user.username }}</li>
-                        <li><a href="#">프로필</a></li>
-                        <li><a href="#">로그아웃</a></li>
+                        <li><a href="/dashboard">프로필</a></li>
+                        <li><a href="/logout">로그아웃</a></li>
                     </ul>
                 </div>
             </div>
@@ -89,24 +89,31 @@
     />
     <button onclick="initMap()">클릭</button>
     <div id="map"></div>
+    
     <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">게시글 입력</h4>
+                    </div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <label for="recipient-name" class="control-label">Title:</label>
+                            <input type="text" class="form-control" id="recipient-name" name="title">
+                            <label for="message-text" class="control-label">Message:</label>
+                            <textarea class="form-control" id="message-text" name="description"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="modal-body">
-          ...
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
     </div>
 </div>
 
@@ -118,24 +125,6 @@
  <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
  <!-- Bootstrap Js CDN -->
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-
-<script>      
-      // 지도 클릭하면 마커 생성
-    //   map.addListener("click", (e) => {
-    //     const marker = new google.maps.Marker({
-    //         position: e.latLng,
-    //         map: map,
-    //     });
-
-    //     marker.addListener("click", () => {
-    //       $('#myModal').modal("show");
-    //       console.log("Sdasdasd");
-    //   })
-    //   })
-  
-  
-</script>
 
 <script type="text/javascript">
     function initMap() {
@@ -167,7 +156,6 @@
                 console.log("Sdasdasd");
             })
         })
-
 
         const input = document.getElementById("pac-input");
         const autocomplete = new google.maps.places.Autocomplete(input);
@@ -211,6 +199,15 @@
             infowindow.open(map, marker);
         });
     }
+
+    function addMarker(location) {
+        const marker = new google.maps.Marker({
+            position: location,
+            map: map,
+        });
+        markers.push(marker);
+    }
+
     $('#sidebarCollapse').on('click', function () {
         $('#sidebar').toggleClass('active');
     });
