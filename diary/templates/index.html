@@ -4,92 +4,104 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>MapYourDiary</title>
     <link rel="stylesheet" href="{%  static 'style.css' %}" />
+    <link rel="stylesheet" href="{%  static 'map.css' %}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
          <!-- Bootstrap CSS CDN -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style>
+        @font-face {
+            font-family: NB;
+            src:url({% static 'NanumBarunpenB.ttf' %})format("truetype");
+        }
+        @font-face {
+            font-family: NR;
+            src:url({% static 'NanumBarunpenR.ttf' %})format("truetype");
+        }
+    </style>
 </head>
 
 <body>
 <div class="wrapper">
     <!-- Sidebar Holder -->
     <nav id="sidebar">
-        <div class="sidebar-header">
+        <div class="sidebar-header" style="font-family: NB">
             <h3>내 장소</h3>
         </div>
-
-        <ul class="list-unstyled components">
+        <ul class="list-unstyled components" style="font-family: NB;">
+{#            {% for place in places %}#}
             <li class="active">
-                <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">Home</a>
-                <ul class="collapse list-unstyled" id="homeSubmenu">
-                    <li><a href="#">Home 1</a></li>
-                    <li><a href="#">Home 2</a></li>
-                    <li><a href="#">Home 3</a></li>
+                <a href="#Submenu{{ place.id }}" data-toggle="collapse" aria-expanded="true">SAC 아트홀</a>
+                <ul class="collapse list-unstyled" id="Submenu{{ place.id }}">
+                    <li style="font-family: NR;margin-left: 10px;margin-right: 20px;">
+                        <btn type="button" style="text-align: center">클라우드반은...</btn>
+                            {% if user_status %}
+                                <img class="like" src="{% static 'like.png' %}" data-id="{{ place.id }}" alt="Image" style="cursor: pointer;float:right;width: 2.3rem;"></btn>
+                            {% else %}
+                                <img class="like" src="{% static 'dislike.png' %}" data-id="{{ place.id }}" alt="Image" style="cursor: pointer;float:right;width: 2.3rem;"></a>
+                            {% endif %}
+                    </li>
                 </ul>
             </li>
-            <li>
-                <a href="#">About</a>
-                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false">Pages</a>
-                <ul class="collapse list-unstyled" id="pageSubmenu">
-                    <li><a href="#">Page 1</a></li>
-                    <li><a href="#">Page 2</a></li>
-                    <li><a href="#">Page 3</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">Portfolio</a>
-            </li>
-            <li>
-                <a href="#">Contact</a>
-            </li>
+{#            {% endfor %}#}
+
+{#            <li>#}
+{#                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false">친구 목록</a>#}
+{#                <ul class="collapse list-unstyled" id="pageSubmenu">#}
+{#                    <li><a href="#">Page 1</a></li>#}
+{#                    <li><a href="#">Page 2</a></li>#}
+{#                    <li><a href="#">Page 3</a></li>#}
+{#                </ul>#}
+{#            </li>#}
+
         </ul>
 
         <ul class="list-unstyled CTAs">
-            <li><a href="https://bootstrapious.com/tutorial/files/sidebar.zip" class="download">Download source</a></li>
-            <li><a href="https://bootstrapious.com/p/bootstrap-sidebar" class="article">Back to article</a></li>
+            <li><a href="#" class="download" style="font-family: NB; font-size: 1.5em">길찾기</a></li>
+            <li><a href="#" class="article" style="font-family: NB">친구 추가</a></li>
         </ul>
     </nav>
 
     <!-- Page Content Holder -->
-    <div id="content">
+    <div id="content" style="width: 100vw; height: 100vh;font-family: NB;">
 
         <nav class="navbar navbar-default">
             <div class="container-fluid">
-
+                <h1 style="font-family: NB; margin-top: 0px;">Map Your Diary</h1>
                 <div class="navbar-header">
                     <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
                         <i class="glyphicon glyphicon-align-left"></i>
-                        <span>장소</span>
+                        <span>내 장소</span>
                     </button>
                 </div>
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav navbar-right">
-                        <span>Welcome {{ user.username }}</span>
-                        <li><a href="#">Page</a></li>
-                        <li><a href="#">Page</a></li>
-                        <li><a href="#">Page</a></li>
-                        <li><a href="#">Page</a></li>
-                        <li><a href="/dashboard">프로필</a></li>
+                    <ul class="nav navbar-nav navbar-right" style="font-size: 1.2em;">
+                        <li id="id_username"><a href="/dashboard">{{ user.username }}님</a></li>
                         <li><a href="/logout">로그아웃</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
+        <div class="pac-card" id="pac-card">
+          <div>
+            <div id="title" style="font-family: NB; font-size: 1.9em;">장소 검색</div>
+          </div>
+          <div id="pac-container">
+              <input id="pac-input" type="text" class="form-control" style="font-family: NR" placeholder="장소명을 입력하세요." aria-describedby="basic-addon2">
+          </div>
+        </div>
+        <div id="map" style="height: 85%;"></div>
+        <div id="infowindow-content">
+          <img src="" width="16" height="16" id="place-icon" />
+          <span id="place-name" class="title"></span><br />
+          <span id="place-address"></span>
+        </div>
 
-        <h2>Collapsible Sidebar Using Bootstrap 3</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-    <input
-      id="pac-input"
-      class="controls"
-      type="text"
-      placeholder="Search Box"
-    />
-    <button onclick="initMap()">클릭</button>
     <div id="map"></div>
-    
+
     <!-- Modal -->
     
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -99,8 +111,10 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title" id="myModalLabel">게시글 입력</h4>
                     </div>
-                    <form method="POST" action="">
+                    <form method="POST" action="{% url 'add_place' %}">
                         {% csrf_token %}
+                        <input type="float"  name="lng" id="lng-input" value="" hidden>
+                        <input type="float"  name="lat" id="lat-input" value="" hidden>
                         <div class="modal-body">
                             <!-- 글 제목 -->
                             <label for="recipient-name" class="control-label">Title:</label>
@@ -126,22 +140,57 @@
     </div>
 </div>
 
-<script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0VuxLCHgrHGPT1SitPMHecNCZHsbXe9A&callback=initMap&libraries=places&v=weekly&censor=true"
-  defer
-></script>
+
 <!-- jQuery CDN -->
  <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
  <!-- Bootstrap Js CDN -->
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0VuxLCHgrHGPT1SitPMHecNCZHsbXe9A&callback=initMap&libraries=places&v=weekly&censor=true"
+  defer
+></script>
 
 <script type="text/javascript">
+    $(document).on("click", ".like", function(event){
+        var user_name = $('#id_username').text();
+        var place_id = $(this).data("id");
+        $.ajax({
+          type: "POST",
+          url: "{% url 'add_good_place' %}",
+          data: {'place_id': place_id, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+          dataType: "json",
+          success: function(response){
+              console.log(this.$(".like-img"));
+            if (response.message == 1) {
+                this.$(".like-img").attr('src',"{% static 'like.png' %}")
+            }
+            else {
+                this.$(".like-img").attr('src',"{% static 'dislike.png' %}")
+            }
+          },
+        });
+      });
+      // 지도 클릭하면 마커 생성
+    //   map.addListener("click", (e) => {
+    //     const marker = new google.maps.Marker({
+    //         position: e.latLng,
+    //         map: map,
+    //     });
+
+    //     marker.addListener("click", () => {
+    //       $('#myModal').modal("show");
+    //       console.log("Sdasdasd");
+    //   })
+    //   })
+
+    // 지도 생성 & 자동완성으로 동기적으로 변경
     function initMap() {
         const map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: -33.8688, lng: 151.2195 },
-        zoom: 13,
+        zoom: 15,
         mapTypeId: "roadmap",
-      });
+        });
+        // 현재 위치 찾기
         if (navigator.geolocation){
             navigator.geolocation.getCurrentPosition(
                 function(pos) {
@@ -155,6 +204,8 @@
 
         // 마커 생성 및 모달 띄우기 -유찬영
         map.addListener("click", (e) => {
+            $('#lng-input').val(e.latLng.lng);
+            $('#lat-input').val(e.latLng.lat);
             const marker = new google.maps.Marker({
                 position: e.latLng,
                 map: map,
@@ -164,63 +215,65 @@
                 $('#myModal').modal("show");
             })
         })
-
+        // 검색어를 동적으로 적용하여 장소 찾기
         const input = document.getElementById("pac-input");
+        const card = document.getElementById("pac-card");
+        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
         const autocomplete = new google.maps.places.Autocomplete(input);
+          // Bind the map's bounds (viewport) property to the autocomplete object,
+          // so that the autocomplete requests use the current map bounds for the
+          // bounds option in the request.
         autocomplete.bindTo("bounds", map);
-
-        // Specify just the place data fields that you need.
-        autocomplete.setFields(["place_id", "geometry", "name"]);
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
+          // Set the data fields to return when the user selects a place.
+        autocomplete.setFields(["address_components", "geometry", "icon", "name"]);
         const infowindow = new google.maps.InfoWindow();
         const infowindowContent = document.getElementById("infowindow-content");
         infowindow.setContent(infowindowContent);
 
-        const marker = new google.maps.Marker({ map: map });
-        marker.addListener("click", () => {
-            infowindow.open(map, marker);
+        const marker = new google.maps.Marker({
+            map,
+            anchorPoint: new google.maps.Point(0, -29),
         });
         autocomplete.addListener("place_changed", () => {
             infowindow.close();
+            marker.setVisible(false);
             const place = autocomplete.getPlace();
 
             if (!place.geometry) {
+              window.alert("장소 검색 실패: '" + place.name + "'");
               return;
             }
 
+            // If the place has a geometry, then present it on a map.
             if (place.geometry.viewport) {
               map.fitBounds(place.geometry.viewport);
             } else {
               map.setCenter(place.geometry.location);
-              map.setZoom(17);
+              map.setZoom(17); // Why 17? Because it looks good.
             }
-            // Set the position of the marker using the place ID and location.
-            marker.setPlace({
-              placeId: place.place_id,
-              location: place.geometry.location,
-            });
+            marker.setPosition(place.geometry.location);
+            marker.addListener("click", () => {
+                $('#myModal').modal("show");
+            })
             marker.setVisible(true);
-            infowindowContent.children.namedItem("place-name").textContent = place.name;
-            infowindowContent.children.namedItem("place-id").textContent = place.place_id;
-            infowindowContent.children.namedItem("place-address").textContent = place.formatted_address;
+            let address = "";
+
+            if (place.address_components) {
+                var step;
+                for (step = 0; step < place.address_components.length; step++) {
+                    address = address + ' ' + place.address_components[step].long_name;
+                }
+            }
+            infowindowContent.children["place-icon"].src = place.icon;
+            infowindowContent.children["place-name"].textContent = place.name;
+            infowindowContent.children["place-address"].textContent = address;
             infowindow.open(map, marker);
         });
-    }
-
-    function addMarker(location) {
-        const marker = new google.maps.Marker({
-            position: location,
-            map: map,
-        });
-        markers.push(marker);
     }
 
     $('#sidebarCollapse').on('click', function () {
         $('#sidebar').toggleClass('active');
     });
-
-
 </script>
 </body>
 </html>

@@ -80,7 +80,7 @@ DATABASES = {
         'ENGINE': 'djongo',
         'NAME': 'test1231',
         'HOST': 'mongodb://dundun:dundun@34.202.159.8:27017',
-        # 'HOST': 'localhost',
+        # 'HOST': 'ec2-34-202-159-8.compute-1.amazonaws.com',
         'PORT': '27017',
         'USER': 'dundun',
         'PASSWORD': 'dundun',

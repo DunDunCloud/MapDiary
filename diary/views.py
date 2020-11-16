@@ -12,12 +12,11 @@ from .forms import PlaceForm
 @login_required
 def index(request):
     user = request.user
-
     # place = get_object_or_404(Place, name='place')
     # if user.is_authenticated:
     #     return redirect(index)
     # else:
-    return render(request, 'index.html')
+    return render(request, 'index.html', {'user': user, 'user_status': True})
 
 
 @login_required
@@ -44,29 +43,22 @@ def logout(request):
     return HttpResponseRedirect(logout_url)
 
 @login_required
-def new_place(request):
-    if request.method == "POST":
-        form = PlaceForm(request.POST)
-
-        if form.is_valid():
-            title = form.cleaned_data['title']
-            description = form.cleaned_data['description']
-            form.save()
-        return HttpResponseRedirect('index.html')
-    
-    else:
-        form = PlaceForm()
-    
-    return render(request, 'index.html', {'form': form})
+def add_place(request):
+    if request.method == 'POST':
+        new_diary = Place.objects.create(
+            title = request.POST['title'],
+            description = request.POST['description'],
+            writer = request.user.social_auth.get(provider='auth0').uid,
+            lat = request.POST['lat'],
+            lng = request.POST['lng']
+        )
+        new_diary.save()
+        print(new_diary)
+    return render(request, 'index.html')
 
 
-    return render(request, "index.html", {"form": form})
-    # if request.method == 'POST':
-    #     new_diary = Place.objects.create(
-    #         title = request.POST['title'],
-    #         description = request.POST['description'],
-    #         writer = request.user.social_auth.get(provider='auth0').uid,
-    #         lat = request.POST['lat'],
-    #         lng = request.POST['lng']
-    #     )
-    # return render(request, 'index.html')
+def add_good_place(request):
+    context = {'status': 0,
+               'message': 0,
+               }
+    return HttpResponse(json.dumps(context), content_type="application/json")

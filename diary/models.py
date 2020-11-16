@@ -12,5 +12,4 @@ class Place(models.Model):
     lat = models.FloatField(default=0.0)
     lng = models.FloatField(default=0.0)
     published_date = models.DateTimeField(auto_now_add=True)
-
-    
+#     사진 url 추가 필요
