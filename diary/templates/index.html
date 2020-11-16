@@ -79,8 +79,8 @@
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right" style="font-size: 1.2em;">
-                        <li id="id_username"><a href="#">{{ user.username }}님</a></li>
-                        <li><a href="#">로그아웃</a></li>
+                        <li id="id_username"><a href="/dashboard">{{ user.username }}님</a></li>
+                        <li><a href="/logout">로그아웃</a></li>
                     </ul>
                 </div>
             </div>
@@ -101,24 +101,31 @@
         </div>
 
     <div id="map"></div>
+
     <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="font-family: NanumBarunPen;">
-    <div class="modal-dialog" style="font-family: NB;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">게시글 입력</h4>
+                    </div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <label for="recipient-name" class="control-label">Title:</label>
+                            <input type="text" class="form-control" id="recipient-name" name="title">
+                            <label for="message-text" class="control-label">Message:</label>
+                            <textarea class="form-control" id="message-text" name="description"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="modal-body">
-          ...
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
     </div>
 </div>
 
@@ -186,7 +193,20 @@
         }else {
             alert('GPS를 지원하지 않습니다');
         }
-        const card = document.getElementById("pac-card");
+
+        // 마커 생성 및 모달 띄우기 -유찬영
+        map.addListener("click", (e) => {
+            const marker = new google.maps.Marker({
+                position: e.latLng,
+                map: map,
+            });
+
+            marker.addListener("click", () => {
+                $('#myModal').modal("show");
+                console.log("Sdasdasd");
+            })
+        })
+
         const input = document.getElementById("pac-input");
         map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
         const autocomplete = new google.maps.places.Autocomplete(input);
@@ -235,21 +255,15 @@
             infowindowContent.children["place-name"].textContent = place.name;
             infowindowContent.children["place-address"].textContent = address;
             infowindow.open(map, marker);
-
-            // 마커 생성 및 모달 띄우기 -유찬영
-            map.addListener("click", (e) => {
-                const marker = new google.maps.Marker({
-                    position: e.latLng,
-                    map: map,
-                });
-
-                marker.addListener("click", () => {
-                    $('#myModal').modal("show");
-                    console.log("Sdasdasd");
-                })
-            })
         });
     }
+
+
+    $('#sidebarCollapse').on('click', function () {
+        $('#sidebar').toggleClass('active');
+    });
+
+
 </script>
 </body>
 </html>
