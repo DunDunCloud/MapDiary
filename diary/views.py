@@ -6,7 +6,6 @@ import json
 from django.contrib.auth import logout as log_out
 from django.conf import settings
 from urllib.parse import urlencode
-from .forms import PlaceForm
 
 # Create your views here.
 @login_required
@@ -49,6 +48,8 @@ def add_place(request):
             title = request.POST['title'],
             description = request.POST['description'],
             writer = request.user.social_auth.get(provider='auth0').uid,
+            place_name = request.POST['place_name'],
+            place_addr = request.POST['place_addr'],
             lat = request.POST['lat'],
             lng = request.POST['lng']
         )
@@ -62,3 +63,9 @@ def add_good_place(request):
                'message': 0,
                }
     return HttpResponse(json.dumps(context), content_type="application/json")
+
+def show_place(request):
+    uid = request.user.social_auth.get(provider='auth0').uid
+    places = Place.objects.filter(writer=uid)
+
+    return render(request, 'index.html', {'places':places})

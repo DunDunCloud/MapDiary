@@ -14,11 +14,11 @@
     <style>
         @font-face {
             font-family: NB;
-            src:url({% static 'NanumBarunpenB.ttf' %})format("truetype");
+            src:url("{% static 'NanumBarunpenB.ttf' %}")format("truetype");
         }
         @font-face {
             font-family: NR;
-            src:url({% static 'NanumBarunpenR.ttf' %})format("truetype");
+            src:url("{% static 'NanumBarunpenR.ttf' %}")format("truetype");
         }
     </style>
 </head>
@@ -31,8 +31,9 @@
             <h3>내 장소</h3>
         </div>
         <ul class="list-unstyled components" style="font-family: NB;">
-{#            {% for place in places %}#}
+            {% for place in places %}
             <li class="active">
+                {{ place.title }}
                 <a href="#Submenu{{ place.id }}" data-toggle="collapse" aria-expanded="true">SAC 아트홀</a>
                 <ul class="collapse list-unstyled" id="Submenu{{ place.id }}">
                     <li style="font-family: NR;margin-left: 10px;margin-right: 20px;">
@@ -45,7 +46,7 @@
                     </li>
                 </ul>
             </li>
-{#            {% endfor %}#}
+            {% endfor %}
 
 {#            <li>#}
 {#                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false">친구 목록</a>#}
@@ -99,8 +100,6 @@
           <span id="place-name" class="title"></span><br />
           <span id="place-address"></span>
         </div>
-
-    <div id="map"></div>
 
     <!-- Modal -->
     
