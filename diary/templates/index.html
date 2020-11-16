@@ -93,7 +93,6 @@
         </div>
 
     <!-- Modal -->
-    
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -132,32 +131,12 @@
     </div>
 </div>
 
-
-
-
 <!-- jQuery CDN -->
  <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
  <!-- Bootstrap Js CDN -->
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0VuxLCHgrHGPT1SitPMHecNCZHsbXe9A&callback=initMap&libraries=places&v=weekly&censor=true"
-  defer
-></script>
-<!-- {% for place in places %}
-<script>
-     = {lat: place.lat, lng: place.lng}
-</script>
-{% endfor %} -->
-<!-- 
-<script>
-    function addMarker(lat, lng){
-        const marker = new google.maps.Marker({
-                lat: lat,
-                lng: lng,
-                map: map,
-        });
-    }
-</script> -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0VuxLCHgrHGPT1SitPMHecNCZHsbXe9A&callback=initMap&libraries=places&v=weekly&censor=true"
+  defer></script>
 <script>
     var lat_arr = new Array()
     var lng_arr = new Array()
@@ -165,8 +144,8 @@
 
 {% for place in places %}
 <script>
-    lat_arr.push({lat: "{{place.pos}}"});
-    lng_arr.push({lng: "{{place.lng}}"});
+    lat_arr.push("{{place.lat}}"*1);
+    lng_arr.push("{{place.lng}}"*1);
 </script>
 {% endfor %}
 
@@ -191,15 +170,20 @@
         });
       });
 
-
     // 지도 생성 & 자동완성으로 동기적으로 변경
-    
     function initMap() {
         const map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: -33.8688, lng: 151.2195 },
         zoom: 15,
         mapTypeId: "roadmap",
         });
+
+        // 아이콘 종류
+        var icon1 = {
+            url: "http://maps.google.com/mapfiles/kml/pushpin/blue-pushpin.png", // url
+            scaledSize: new google.maps.Size(45, 45) // scaled size
+        };
+
         // 현재 위치 찾기
         if (navigator.geolocation){
             navigator.geolocation.getCurrentPosition(
@@ -211,20 +195,30 @@
         }else {
             alert('GPS를 지원하지 않습니다');
         }
+
+        // 기존에 저장한 게시글에 맞는 마커 찍어주기
         for(var i = 0; i < lat_arr.length; i++){
             const marker =  new google.maps.Marker({
-                lat: lat_arr[i],
-                lng: lng_arr[i],
-                map: map
+                position: {lat: lat_arr[i], lng: lng_arr[i]},
+                map: map,
+                icon: icon1
             })
+            console.log(lat_arr[i])
+            console.log(lng_arr[i])
         }
         
         // 마커 생성 및 모달 띄우기 -유찬영
+        var pre_marker = null
         map.addListener("click", (e) => {
+            // 클릭할 때 마커 하나만 찍히게
+            if(pre_marker != null){
+                pre_marker.setMap(null)
+            }
             const marker = new google.maps.Marker({
                 position: e.latLng,
                 map: map,
             });
+            pre_marker = marker
 
             marker.addListener("click", () => {
                 $('#lng-input').val(e.latLng.lng);
