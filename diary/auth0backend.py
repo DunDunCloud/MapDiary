@@ -35,5 +35,5 @@ class Auth0(BaseOAuth2):
         return {'username': payload['nickname'],
                 'first_name': payload['name'],
                 'picture': payload['picture'],
-                'user_id': payload['sub'],
-                'email': payload['email']}
+                'user_id': payload['sub']
+        }
