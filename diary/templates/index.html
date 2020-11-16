@@ -49,10 +49,42 @@
 
         </ul>
 
-{#        <ul class="list-unstyled CTAs">#}
-{#            <li><a href="#" class="download" style="font-family: NB; font-size: 1.5em">길찾기</a></li>#}
+        <ul class="list-unstyled CTAs">
+            <li><a href="#" class="download" style="font-family: NB; font-size: 1.5em">길찾기</a></li>
+            
+            <!-- 길찾기: 가는 방법 설정 -->
+            <div id="floating-panel">
+                <b>Mode of Travel: </b>
+                <select id="mode">
+                  <option value="DRIVING">Driving</option>
+                  <option value="WALKING">Walking</option>
+                  <option value="BICYCLING">Bicycling</option>
+                  <option value="TRANSIT">Transit</option>
+                </select>
+            </div>
+            
+            <!-- 길찾기: 출발지 설정 -->
+            <div id="floating-panel">
+                <b>출발지: </b>
+                <select id="dep_place">
+                {% for place in places %}
+                  <option value="{{place.lat}},{{place.lng}}">{{place.place_name}}</option>
+                {% endfor %}
+                </select>
+            </div>
+
+            <!-- 길찾기: 도착지 설정 -->
+            <div id="floating-panel">
+                <b>도착지: </b>
+                <select id="dest_place">
+                  {% for place in places %}
+                    <option value="{{place.lat}},{{place.lng}}">{{place.place_name}}</option>
+                  {% endfor %}
+                </select>
+            </div>
 {#            <li><a href="#" class="article" style="font-family: NB">친구 추가</a></li>#}
-{#        </ul>#}
+        </ul>
+
     </nav>
 
     <!-- Page Content Holder -->
@@ -137,6 +169,7 @@
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0VuxLCHgrHGPT1SitPMHecNCZHsbXe9A&callback=initMap&libraries=places&v=weekly&censor=true"
   defer></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 <script>
     var lat_arr = new Array()
     var lng_arr = new Array()
@@ -172,10 +205,18 @@
 
     // 지도 생성 & 자동완성으로 동기적으로 변경
     function initMap() {
+        const directionsRenderer = new google.maps.DirectionsRenderer();
+        const directionsService = new google.maps.DirectionsService();
         const map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: -33.8688, lng: 151.2195 },
         zoom: 15,
         mapTypeId: "roadmap",
+        });
+
+        directionsRenderer.setMap(map);
+        // calculateAndDisplayRoute(directionsService, directionsRenderer);
+        document.getElementById("mode").addEventListener("change", () => {
+            calculateAndDisplayRoute(directionsService, directionsRenderer);
         });
 
         // 아이콘 종류
@@ -290,6 +331,31 @@
                 map
             })
         });
+    }
+
+    //  길 찾기 함수
+    function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+        const selectedMode = document.getElementById("mode").value;
+        const dep_pos = document.getElementById("dep_place").value.split(",");
+        const dest_pos = document.getElementById("dest_place").value.split(",");
+
+        directionsService.route(
+            {
+                origin: { lat: dep_pos[0]*1, lng: dep_pos[1]*1 },
+                destination: { lat: dest_pos[0]*1, lng: dest_pos[1]*1 },
+                // Note that Javascript allows us to access the constant
+                // using square brackets and a string value as its
+                // "property."
+                travelMode: google.maps.TravelMode[selectedMode],
+            },
+            (response, status) => {
+                if (status == "OK") {
+                    directionsRenderer.setDirections(response);
+                } else {
+                    window.alert("Directions request failed due to " + status);
+                }
+            }
+        );
     }
 
     $('#sidebarCollapse').on('click', function () {
