@@ -8,10 +8,9 @@ from django.conf import settings
 from urllib.parse import urlencode
 
 # Create your views here.
-# @login_required
+@login_required
 def index(request):
     user = request.user
-    user = {'username': 'test'}
     # place = get_object_or_404(Place, name='place')
     # if user.is_authenticated:
     #     return redirect(index)
@@ -19,7 +18,7 @@ def index(request):
     return render(request, 'index.html', {'user': user, 'user_status': True})
 
 
-# @login_required
+@login_required
 def dashboard(request):
     user = request.user
     auth0user = user.social_auth.get(provider='auth0')
@@ -42,8 +41,8 @@ def logout(request):
     logout_url = 'https://%s/v2/logout?client_id=%s&%s'%(settings.SOCIAL_AUTH_AUTH0_DOMAIN, settings.SOCIAL_AUTH_AUTH0_KEY, return_to)
     return HttpResponseRedirect(logout_url)
 
-#@login_required
-def new_place(request):
+@login_required
+def add_place(request):
     if request.method == 'POST':
         new_diary = Place.objects.create(
             title = request.POST['title'],
@@ -52,6 +51,8 @@ def new_place(request):
             lat = request.POST['lat'],
             lng = request.POST['lng']
         )
+        new_diary.save()
+        print(new_diary)
     return render(request, 'index.html')
 
 

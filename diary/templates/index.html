@@ -110,8 +110,10 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title" id="myModalLabel">게시글 입력</h4>
                     </div>
-                    <form method="POST">
+                    <form method="POST" action="{% url 'add_place' %}">
                         {% csrf_token %}
+                        <input type="float"  name="lng" id="lng-input" value="" hidden>
+                        <input type="float"  name="lat" id="lat-input" value="" hidden>
                         <div class="modal-body">
                             <label for="recipient-name" class="control-label">Title:</label>
                             <input type="text" class="form-control" id="recipient-name" name="title">
@@ -193,6 +195,8 @@
 
         // 마커 생성 및 모달 띄우기 -유찬영
         map.addListener("click", (e) => {
+            $('#lng-input').val(e.latLng.lng);
+            $('#lat-input').val(e.latLng.lat);
             const marker = new google.maps.Marker({
                 position: e.latLng,
                 map: map,
@@ -200,7 +204,6 @@
 
             marker.addListener("click", () => {
                 $('#myModal').modal("show");
-                console.log("Sdasdasd");
             })
         })
         // 검색어를 동적으로 적용하여 장소 찾기
