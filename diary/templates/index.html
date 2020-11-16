@@ -36,7 +36,7 @@
                 <a href="#Submenu{{ place.id }}" data-toggle="collapse" aria-expanded="true">{{ place.place_name }}</a>
                 <ul class="collapse list-unstyled" id="Submenu{{ place.id }}">
                     <li style="font-family: NR;margin-left: 10px;margin-right: 20px;">
-                        <btn href="" type="button" style="text-align: center;font-size: 1.2em;">{{ place.title }}</btn>
+                        <a id="placedetail" type="button" data-toggle="modal" data-target=".placeModal" data-id="{{ place.id }}" style="text-align: center;font-size: 1.2em;text-decoration: none;color: whitesmoke;">{{ place.title }}</a>
 {#                            {% if user_status %}#}
 {#                                <img class="like" src="{% static 'like.png' %}" data-id="{{ place.id }}" alt="Image" style="cursor: pointer;float:right;width: 2.3rem;"></btn>#}
 {#                            {% else %}#}
@@ -49,10 +49,10 @@
 
         </ul>
 
-{#        <ul class="list-unstyled CTAs">#}
-{#            <li><a href="#" class="download" style="font-family: NB; font-size: 1.5em">길찾기</a></li>#}
-{#            <li><a href="#" class="article" style="font-family: NB">친구 추가</a></li>#}
-{#        </ul>#}
+        <ul class="list-unstyled CTAs">
+            <li><a href="#" class="download" style="font-family: NB; font-size: 1.5em">길찾기</a></li>
+            <li><a href="#" class="article" style="font-family: NB">친구 추가</a></li>
+        </ul>
     </nav>
 
     <!-- Page Content Holder -->
@@ -81,7 +81,7 @@
             <div id="title" style="font-family: NB; font-size: 1.9em;">장소 검색</div>
           </div>
           <div id="pac-container">
-              <input id="pac-input" type="text" class="form-control" style="font-family: NR" placeholder="장소명을 입력하세요." aria-describedby="basic-addon2">
+              <input id="pac-input" type="text" class="form-control" style="font-family: NR;margin-top: 7px;" placeholder="장소명을 입력하세요." aria-describedby="basic-addon2">
           </div>
         </div>
         <div id="map" style="height: 85%;"></div>
@@ -120,6 +120,29 @@
                 </div>
             </div>
         </div>
+
+<!-- place Modal -->
+<div class="modal fade placeModal" id="placeModal" tabindex="-1" role="dialog" style="font-family: NR;" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="placeModal-title"></h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <label class="control-label">Place:</label>
+          <span id="placeModal-name"></span>
+          <p id="placeModal-text"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
     </div>
 </div>
 
@@ -134,22 +157,20 @@
 ></script>
 
 <script type="text/javascript">
-    $(document).on("click", ".like", function(event){
-        var user_name = $('#id_username').text();
+    $(document).on("click", "#placedetail", function(event){
         var place_id = $(this).data("id");
+        console.log(place_id);
         $.ajax({
           type: "POST",
-          url: "{% url 'add_good_place' %}",
+          url: "{% url 'show_place' %}",
           data: {'place_id': place_id, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
           dataType: "json",
           success: function(response){
-              console.log(this.$(".like-img"));
-            if (response.message == 1) {
-                this.$(".like-img").attr('src',"{% static 'like.png' %}")
-            }
-            else {
-                this.$(".like-img").attr('src',"{% static 'dislike.png' %}")
-            }
+            $('#placeModal-name').text(response.placename);
+            // $('#placeModal-date').text(response.date);
+            $('#placeModal-text').text(response.description);
+            $('#placeModal-title').text(response.title);
+            console.log(response)
           },
         });
       });
