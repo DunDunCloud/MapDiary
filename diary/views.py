@@ -6,6 +6,7 @@ import json
 from django.contrib.auth import logout as log_out
 from django.conf import settings
 from urllib.parse import urlencode
+from django.core import serializers
 
 # Create your views here.
 @login_required
@@ -13,7 +14,7 @@ def index(request):
     user = request.user
     auth0user = request.user.social_auth.get(provider='auth0')
     places = Place.objects.filter(writer=auth0user.uid)
-
+    
     return render(request, 'index.html', {'user': user, 'user_status': True, 'places': places})
 
 
@@ -62,3 +63,23 @@ def add_good_place(request):
                'message': 0,
                }
     return HttpResponse(json.dumps(context), content_type="application/json")
+
+@login_required
+def show_place(request):
+    pk = request.POST.get('place_id')
+    print(pk)
+    place = get_object_or_404(Place, id=pk)
+    data = {
+        "title": place.title,
+        "description": place.description,
+        "id": place.id,
+        "placename": place.place_name
+    }
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+@login_required
+def delete_post(request):
+    postId = request.POST.get('del-post-input')
+    delPost = get_object_or_404(Place, id=postId)
+    delPost.delete()
+    return redirect('/')
