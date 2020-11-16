@@ -11,11 +11,13 @@ from urllib.parse import urlencode
 @login_required
 def index(request):
     user = request.user
+    auth0user = request.user.social_auth.get(provider='auth0')
     # place = get_object_or_404(Place, name='place')
     # if user.is_authenticated:
     #     return redirect(index)
     # else:
-    return render(request, 'index.html', {'user': user, 'user_status': True})
+    places = Place.objects.filter(writer=auth0user.uid)
+    return render(request, 'index.html', {'user': user, 'user_status': True, 'places': places})
 
 
 @login_required
@@ -49,11 +51,13 @@ def add_place(request):
             description = request.POST['description'],
             writer = request.user.social_auth.get(provider='auth0').uid,
             lat = request.POST['lat'],
-            lng = request.POST['lng']
+            lng = request.POST['lng'],
+            place_name = request.POST['place'],
+            place_addr = request.POST['address']
         )
         new_diary.save()
         print(new_diary)
-    return render(request, 'index.html')
+    return redirect('/')
 
 
 def add_good_place(request):
