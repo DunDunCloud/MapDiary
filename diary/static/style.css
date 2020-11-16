@@ -1,4 +1,11 @@
-
+@font-face {
+    font-family: NB;
+    src:url(NanumBarunpenB.ttf)format("truetype");
+}
+@font-face {
+    font-family: NR;
+    src:url(NanumBarunpenB.ttf)format("truetype");
+}
 /*
     DEMO STYLE
 */
@@ -6,13 +13,12 @@
 
 
 body {
-    font-family: 'Poppins', sans-serif;
     background: #fafafa;
 }
 
 p {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.1em;
+    font-family: NR;
+    font-size: 1.2em;
     font-weight: 300;
     line-height: 1.7em;
     color: #999;
@@ -83,7 +89,7 @@ a, a:hover, a:focus {
 
 #sidebar ul li a {
     padding: 10px;
-    font-size: 1.1em;
+    font-size: 1.2em;
     display: block;
 }
 #sidebar ul li a:hover {
@@ -106,8 +112,8 @@ a[aria-expanded="false"]::before, a[aria-expanded="true"]::before {
     display: block;
     position: absolute;
     right: 20px;
-    font-family: 'Glyphicons Halflings';
-    font-size: 0.6em;
+    font-family: NB;
+    font-size: 1em;
 }
 a[aria-expanded="true"]::before {
     content: '\e260';
@@ -115,7 +121,7 @@ a[aria-expanded="true"]::before {
 
 
 ul ul a {
-    font-size: 0.9em !important;
+    font-size: 1.2em !important;
     padding-left: 30px !important;
     background: #6d7fcc;
 }
@@ -126,7 +132,7 @@ ul.CTAs {
 
 ul.CTAs a {
     text-align: center;
-    font-size: 0.9em !important;
+    font-size: 1.2em !important;
     display: block;
     border-radius: 5px;
     margin-bottom: 5px;
@@ -168,3 +174,4 @@ a.article, a.article:hover {
         display: none;
     }
 }
+

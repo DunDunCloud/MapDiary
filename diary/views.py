@@ -8,18 +8,18 @@ from django.conf import settings
 from urllib.parse import urlencode
 
 # Create your views here.
-@login_required
+# @login_required
 def index(request):
     user = request.user
-
+    user = {'username': 'test'}
     # place = get_object_or_404(Place, name='place')
     # if user.is_authenticated:
     #     return redirect(index)
     # else:
-    return render(request, 'index.html')
+    return render(request, 'index.html', {'user': user, 'user_status': True})
 
 
-@login_required
+# @login_required
 def dashboard(request):
     user = request.user
     auth0user = user.social_auth.get(provider='auth0')
@@ -41,3 +41,10 @@ def logout(request):
     return_to = urlencode({'returnTo': request.build_absolute_uri('/')})
     logout_url = 'https://%s/v2/logout?client_id=%s&%s'%(settings.SOCIAL_AUTH_AUTH0_DOMAIN, settings.SOCIAL_AUTH_AUTH0_KEY, return_to)
     return HttpResponseRedirect(logout_url)
+
+
+def add_good_place(request):
+    context = {'status': 0,
+               'message': 0,
+               }
+    return HttpResponse(json.dumps(context), content_type="application/json")
