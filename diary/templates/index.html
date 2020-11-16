@@ -172,9 +172,6 @@
     //   })
     //   })
 
-    $('#sidebarCollapse').on('click', function () {
-        $('#sidebar').toggleClass('active');
-    });
     // 지도 생성 & 자동완성으로 동기적으로 변경
     function initMap() {
         const map = new google.maps.Map(document.getElementById("map"), {
@@ -206,8 +203,9 @@
                 console.log("Sdasdasd");
             })
         })
-
+        // 검색어를 동적으로 적용하여 장소 찾기
         const input = document.getElementById("pac-input");
+        const card = document.getElementById("pac-card");
         map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
         const autocomplete = new google.maps.places.Autocomplete(input);
           // Bind the map's bounds (viewport) property to the autocomplete object,
@@ -242,6 +240,9 @@
               map.setZoom(17); // Why 17? Because it looks good.
             }
             marker.setPosition(place.geometry.location);
+            marker.addListener("click", () => {
+                $('#myModal').modal("show");
+            })
             marker.setVisible(true);
             let address = "";
 
@@ -258,12 +259,9 @@
         });
     }
 
-
     $('#sidebarCollapse').on('click', function () {
         $('#sidebar').toggleClass('active');
     });
-
-
 </script>
 </body>
 </html>
