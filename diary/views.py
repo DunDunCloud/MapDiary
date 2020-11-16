@@ -65,3 +65,15 @@ def add_good_place(request):
                'message': 0,
                }
     return HttpResponse(json.dumps(context), content_type="application/json")
+
+def show_place(request):
+    pk = request.POST.get('place_id')
+    print(pk)
+    place = get_object_or_404(Place, id=pk)
+    data = {
+        "title": place.title,
+        "description": place.description,
+        # "date": place.published_date,
+        "placename": place.place_name
+    }
+    return HttpResponse(json.dumps(data), content_type="application/json")
