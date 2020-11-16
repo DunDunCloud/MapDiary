@@ -11,12 +11,11 @@ from urllib.parse import urlencode
 @login_required
 def index(request):
     user = request.user
-
     # place = get_object_or_404(Place, name='place')
     # if user.is_authenticated:
     #     return redirect(index)
     # else:
-    return render(request, 'index.html')
+    return render(request, 'index.html', {'user': user, 'user_status': True})
 
 
 @login_required
@@ -43,7 +42,7 @@ def logout(request):
     return HttpResponseRedirect(logout_url)
 
 @login_required
-def new_place(request):
+def add_place(request):
     if request.method == 'POST':
         new_diary = Place.objects.create(
             title = request.POST['title'],
@@ -52,4 +51,13 @@ def new_place(request):
             lat = request.POST['lat'],
             lng = request.POST['lng']
         )
+        new_diary.save()
+        print(new_diary)
     return render(request, 'index.html')
+
+
+def add_good_place(request):
+    context = {'status': 0,
+               'message': 0,
+               }
+    return HttpResponse(json.dumps(context), content_type="application/json")
