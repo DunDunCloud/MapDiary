@@ -41,3 +41,15 @@ def logout(request):
     return_to = urlencode({'returnTo': request.build_absolute_uri('/')})
     logout_url = 'https://%s/v2/logout?client_id=%s&%s'%(settings.SOCIAL_AUTH_AUTH0_DOMAIN, settings.SOCIAL_AUTH_AUTH0_KEY, return_to)
     return HttpResponseRedirect(logout_url)
+
+@login_required
+def new_place(request):
+    if request.method == 'POST':
+        new_diary = Place.objects.create(
+            title = request.POST['title'],
+            description = request.POST['description'],
+            writer = request.user.social_auth.get(provider='auth0').uid,
+            lat = request.POST['lat'],
+            lng = request.POST['lng']
+        )
+    return render(request, 'index.html')
