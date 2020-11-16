@@ -91,6 +91,7 @@
     <div id="map"></div>
     
     <!-- Modal -->
+    
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -98,11 +99,19 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title" id="myModalLabel">게시글 입력</h4>
                     </div>
-                    <form method="POST">
+                    <form method="POST" action="">
                         {% csrf_token %}
                         <div class="modal-body">
+                            <!-- 글 제목 -->
                             <label for="recipient-name" class="control-label">Title:</label>
                             <input type="text" class="form-control" id="recipient-name" name="title">
+                            <!-- 장소명 -->
+                            <label for="recipient-name" class="control-label">Place Name:</label>
+                            <input type="text" class="form-control" id="recipient-name" name="place_name">
+                            <!-- 주소 --> 
+                            <label for="recipient-name" class="control-label">Address:</label>
+                            <input type="text" class="form-control" id="recipient-name" name="place_addr">
+                            <!-- 글 내용 -->
                             <label for="message-text" class="control-label">Message:</label>
                             <textarea class="form-control" id="message-text" name="description"></textarea>
                         </div>
@@ -153,7 +162,6 @@
 
             marker.addListener("click", () => {
                 $('#myModal').modal("show");
-                console.log("Sdasdasd");
             })
         })
 

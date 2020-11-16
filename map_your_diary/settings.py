@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'map_your_diary.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'test2',
-        'HOST': 'mongodb://dundun:dundun@34.202.159.8:27017/MapYourDiary',
-        # 'HOST': 'ec2-34-202-159-8.compute-1.amazonaws.com',
+        'NAME': 'test1231',
+        'HOST': 'mongodb://dundun:dundun@34.202.159.8:27017',
+        # 'HOST': 'localhost',
         'PORT': '27017',
         'USER': 'dundun',
         'PASSWORD': 'dundun',

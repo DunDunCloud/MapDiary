@@ -6,6 +6,7 @@ import json
 from django.contrib.auth import logout as log_out
 from django.conf import settings
 from urllib.parse import urlencode
+from .forms import PlaceForm
 
 # Create your views here.
 @login_required
@@ -44,12 +45,28 @@ def logout(request):
 
 @login_required
 def new_place(request):
-    if request.method == 'POST':
-        new_diary = Place.objects.create(
-            title = request.POST['title'],
-            description = request.POST['description'],
-            writer = request.user.social_auth.get(provider='auth0').uid,
-            lat = request.POST['lat'],
-            lng = request.POST['lng']
-        )
-    return render(request, 'index.html')
+    if request.method == "POST":
+        form = PlaceForm(request.POST)
+
+        if form.is_valid():
+            title = form.cleaned_data['title']
+            description = form.cleaned_data['description']
+            form.save()
+        return HttpResponseRedirect('index.html')
+    
+    else:
+        form = PlaceForm()
+    
+    return render(request, 'index.html', {'form': form})
+
+
+    return render(request, "index.html", {"form": form})
+    # if request.method == 'POST':
+    #     new_diary = Place.objects.create(
+    #         title = request.POST['title'],
+    #         description = request.POST['description'],
+    #         writer = request.user.social_auth.get(provider='auth0').uid,
+    #         lat = request.POST['lat'],
+    #         lng = request.POST['lng']
+    #     )
+    # return render(request, 'index.html')
