@@ -31,37 +31,28 @@
             <h3>내 장소</h3>
         </div>
         <ul class="list-unstyled components" style="font-family: NB;">
-{#            {% for place in places %}#}
+            {% for place in places %}
             <li class="active">
-                <a href="#Submenu{{ place.id }}" data-toggle="collapse" aria-expanded="true">SAC 아트홀</a>
+                <a href="#Submenu{{ place.id }}" data-toggle="collapse" aria-expanded="true">{{ place.place_name }}</a>
                 <ul class="collapse list-unstyled" id="Submenu{{ place.id }}">
                     <li style="font-family: NR;margin-left: 10px;margin-right: 20px;">
-                        <btn type="button" style="text-align: center">클라우드반은...</btn>
-                            {% if user_status %}
-                                <img class="like" src="{% static 'like.png' %}" data-id="{{ place.id }}" alt="Image" style="cursor: pointer;float:right;width: 2.3rem;"></btn>
-                            {% else %}
-                                <img class="like" src="{% static 'dislike.png' %}" data-id="{{ place.id }}" alt="Image" style="cursor: pointer;float:right;width: 2.3rem;"></a>
-                            {% endif %}
+                        <btn href="" type="button" style="text-align: center;font-size: 1.2em;">{{ place.title }}</btn>
+{#                            {% if user_status %}#}
+{#                                <img class="like" src="{% static 'like.png' %}" data-id="{{ place.id }}" alt="Image" style="cursor: pointer;float:right;width: 2.3rem;"></btn>#}
+{#                            {% else %}#}
+{#                                <img class="like" src="{% static 'dislike.png' %}" data-id="{{ place.id }}" alt="Image" style="cursor: pointer;float:right;width: 2.3rem;"></a>#}
+{#                            {% endif %}#}
                     </li>
                 </ul>
             </li>
-{#            {% endfor %}#}
-
-{#            <li>#}
-{#                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false">친구 목록</a>#}
-{#                <ul class="collapse list-unstyled" id="pageSubmenu">#}
-{#                    <li><a href="#">Page 1</a></li>#}
-{#                    <li><a href="#">Page 2</a></li>#}
-{#                    <li><a href="#">Page 3</a></li>#}
-{#                </ul>#}
-{#            </li>#}
+            {% endfor %}
 
         </ul>
 
-        <ul class="list-unstyled CTAs">
-            <li><a href="#" class="download" style="font-family: NB; font-size: 1.5em">길찾기</a></li>
-            <li><a href="#" class="article" style="font-family: NB">친구 추가</a></li>
-        </ul>
+{#        <ul class="list-unstyled CTAs">#}
+{#            <li><a href="#" class="download" style="font-family: NB; font-size: 1.5em">길찾기</a></li>#}
+{#            <li><a href="#" class="article" style="font-family: NB">친구 추가</a></li>#}
+{#        </ul>#}
     </nav>
 
     <!-- Page Content Holder -->
@@ -100,8 +91,6 @@
           <span id="place-address"></span>
         </div>
 
-    <div id="map"></div>
-
     <!-- Modal -->
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -114,7 +103,10 @@
                         {% csrf_token %}
                         <input type="float"  name="lng" id="lng-input" value="" hidden>
                         <input type="float"  name="lat" id="lat-input" value="" hidden>
+                        <input type="text" name="address" id="address" value="" hidden>
                         <div class="modal-body">
+                            <label for="place" class="control-label">Place:</label>
+                            <input type="text" class="form-control" id="place-input" name="place">
                             <label for="recipient-name" class="control-label">Title:</label>
                             <input type="text" class="form-control" id="recipient-name" name="title">
                             <label for="message-text" class="control-label">Message:</label>
@@ -122,7 +114,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save changes</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
                         </div>
                     </form>
                 </div>
@@ -195,14 +187,14 @@
 
         // 마커 생성 및 모달 띄우기 -유찬영
         map.addListener("click", (e) => {
-            $('#lng-input').val(e.latLng.lng);
-            $('#lat-input').val(e.latLng.lat);
             const marker = new google.maps.Marker({
                 position: e.latLng,
                 map: map,
             });
 
             marker.addListener("click", () => {
+                $('#lng-input').val(e.latLng.lng);
+                $('#lat-input').val(e.latLng.lat);
                 $('#myModal').modal("show");
             })
         })
@@ -235,18 +227,6 @@
               return;
             }
 
-            // If the place has a geometry, then present it on a map.
-            if (place.geometry.viewport) {
-              map.fitBounds(place.geometry.viewport);
-            } else {
-              map.setCenter(place.geometry.location);
-              map.setZoom(17); // Why 17? Because it looks good.
-            }
-            marker.setPosition(place.geometry.location);
-            marker.addListener("click", () => {
-                $('#myModal').modal("show");
-            })
-            marker.setVisible(true);
             let address = "";
 
             if (place.address_components) {
@@ -258,6 +238,23 @@
             infowindowContent.children["place-icon"].src = place.icon;
             infowindowContent.children["place-name"].textContent = place.name;
             infowindowContent.children["place-address"].textContent = address;
+
+            // If the place has a geometry, then present it on a map.
+            if (place.geometry.viewport) {
+              map.fitBounds(place.geometry.viewport);
+            } else {
+              map.setCenter(place.geometry.location);
+              map.setZoom(17); // Why 17? Because it looks good.
+            }
+            marker.setPosition(place.geometry.location);
+            marker.addListener("click", (e) => {
+                $('#place-input').val(place.name);
+                $('#lng-input').val(e.latLng.lng);
+                $('#lat-input').val(e.latLng.lat);
+                $('#address').val(address);
+                $('#myModal').modal("show");
+            })
+            marker.setVisible(true);
             infowindow.open(map, marker);
         });
     }
