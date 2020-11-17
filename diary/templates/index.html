@@ -14,11 +14,11 @@
     <style>
         @font-face {
             font-family: NB;
-            src:url({% static 'NanumBarunpenB.ttf' %})format("truetype");
+            src:url("{% static 'NanumBarunpenB.ttf' %}")format("truetype");
         }
         @font-face {
             font-family: NR;
-            src:url({% static 'NanumBarunpenR.ttf' %})format("truetype");
+            src:url("{% static 'NanumBarunpenR.ttf' %}")format("truetype");
         }
     </style>
 </head>
@@ -51,6 +51,37 @@
 
         <ul class="list-unstyled CTAs">
             <li><a href="#" class="download" style="font-family: NB; font-size: 1.5em">길찾기</a></li>
+           
+            <!-- 길찾기: 가는 방법 설정 -->
+            <div id="floating-panel">
+                <b>Mode of Travel: </b>
+                <select id="mode">
+                  <option value="DRIVING">Driving</option>
+                  <option value="WALKING">Walking</option>
+                  <option value="BICYCLING">Bicycling</option>
+                  <option value="TRANSIT">Transit</option>
+                </select>
+            </div>
+            
+            <!-- 길찾기: 출발지 설정 -->
+            <div id="floating-panel">
+                <b>출발지: </b>
+                <select id="dep_place">
+                {% for place in places %}
+                  <option value="{{place.lat}},{{place.lng}}">{{place.place_name}}</option>
+                {% endfor %}
+                </select>
+            </div>
+
+            <!-- 길찾기: 도착지 설정 -->
+            <div id="floating-panel">
+                <b>도착지: </b>
+                <select id="dest_place">
+                  {% for place in places %}
+                    <option value="{{place.lat}},{{place.lng}}">{{place.place_name}}</option>
+                  {% endfor %}
+                </select>
+            </div>
             <li><a href="#" class="article" style="font-family: NB">친구 추가</a></li>
         </ul>
     </nav>
@@ -85,6 +116,7 @@
           </div>
         </div>
         <div id="map" style="height: 85%;"></div>
+        
         <div id="infowindow-content">
           <img src="" width="16" height="16" id="place-icon" />
           <span id="place-name" class="title"></span><br />
@@ -109,6 +141,13 @@
                             <input type="text" class="form-control" id="place-input" name="place">
                             <label for="recipient-name" class="control-label">Title:</label>
                             <input type="text" class="form-control" id="recipient-name" name="title">
+                            <!-- 장소명 -->
+                            <label for="recipient-name" class="control-label">Place Name:</label>
+                            <input type="text" class="form-control" id="recipient-name" name="place_name">
+                            <!-- 주소 --> 
+                            <label for="recipient-name" class="control-label">Address:</label>
+                            <input type="text" class="form-control" id="recipient-name" name="place_addr">
+                            <!-- 글 내용 -->
                             <label for="message-text" class="control-label">Message:</label>
                             <textarea class="form-control" id="message-text" name="description"></textarea>
                         </div>
@@ -152,15 +191,24 @@
     </div>
 </div>
 
-
 <!-- jQuery CDN -->
  <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
  <!-- Bootstrap Js CDN -->
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0VuxLCHgrHGPT1SitPMHecNCZHsbXe9A&callback=initMap&libraries=places&v=weekly&censor=true"
-  defer
-></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0VuxLCHgrHGPT1SitPMHecNCZHsbXe9A&callback=initMap&libraries=places&v=weekly&censor=true"
+  defer></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script>
+    var lat_arr = new Array()
+    var lng_arr = new Array()
+</script>
+
+{% for place in places %}
+<script>
+    lat_arr.push("{{place.lat}}"*1);
+    lng_arr.push("{{place.lng}}"*1);
+</script>
+{% endfor %}
 
 <script type="text/javascript">
     $(document).on("click", "#placedetail", function(event){
@@ -180,26 +228,29 @@
           },
         });
       });
-      // 지도 클릭하면 마커 생성
-    //   map.addListener("click", (e) => {
-    //     const marker = new google.maps.Marker({
-    //         position: e.latLng,
-    //         map: map,
-    //     });
-
-    //     marker.addListener("click", () => {
-    //       $('#myModal').modal("show");
-    //       console.log("Sdasdasd");
-    //   })
-    //   })
 
     // 지도 생성 & 자동완성으로 동기적으로 변경
     function initMap() {
+        const directionsRenderer = new google.maps.DirectionsRenderer();
+        const directionsService = new google.maps.DirectionsService();
         const map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: -33.8688, lng: 151.2195 },
         zoom: 15,
         mapTypeId: "roadmap",
         });
+
+        directionsRenderer.setMap(map);
+        // calculateAndDisplayRoute(directionsService, directionsRenderer);
+        document.getElementById("mode").addEventListener("change", () => {
+            calculateAndDisplayRoute(directionsService, directionsRenderer);
+        });
+
+        // 아이콘 종류
+        var icon1 = {
+            url: "http://maps.google.com/mapfiles/kml/pushpin/blue-pushpin.png", // url
+            scaledSize: new google.maps.Size(45, 45) // scaled size
+        };
+
         // 현재 위치 찾기
         if (navigator.geolocation){
             navigator.geolocation.getCurrentPosition(
@@ -211,14 +262,30 @@
         }else {
             alert('GPS를 지원하지 않습니다');
         }
-        let jsonp = {{ jsonp|safe }};
-        console.log(jsonp[0]);
+
+        // 기존에 저장한 게시글에 맞는 마커 찍어주기
+        for(var i = 0; i < lat_arr.length; i++){
+            const marker =  new google.maps.Marker({
+                position: {lat: lat_arr[i], lng: lng_arr[i]},
+                map: map,
+                icon: icon1
+            })
+            console.log(lat_arr[i])
+            console.log(lng_arr[i])
+        }
+
         // 마커 생성 및 모달 띄우기 -유찬영
+        var pre_marker = null
         map.addListener("click", (e) => {
+            // 클릭할 때 마커 하나만 찍히게
+            if(pre_marker != null){
+                pre_marker.setMap(null)
+            }
             const marker = new google.maps.Marker({
                 position: e.latLng,
                 map: map,
             });
+            pre_marker = marker
 
             marker.addListener("click", () => {
                 $('#lng-input').val(e.latLng.lng);
@@ -226,6 +293,7 @@
                 $('#myModal').modal("show");
             })
         })
+
         // 검색어를 동적으로 적용하여 장소 찾기
         const input = document.getElementById("pac-input");
         const card = document.getElementById("pac-card");
@@ -284,12 +352,51 @@
             })
             marker.setVisible(true);
             infowindow.open(map, marker);
+            new google.maps.Marker({
+                position: pos,
+                map
+            })
         });
+    }
+
+    //  길 찾기 함수
+    function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+        const selectedMode = document.getElementById("mode").value;
+        const dep_pos = document.getElementById("dep_place").value.split(",");
+        const dest_pos = document.getElementById("dest_place").value.split(",");
+
+        directionsService.route(
+            {
+                origin: { lat: dep_pos[0]*1, lng: dep_pos[1]*1 },
+                destination: { lat: dest_pos[0]*1, lng: dest_pos[1]*1 },
+                // Note that Javascript allows us to access the constant
+                // using square brackets and a string value as its
+                // "property."
+                travelMode: google.maps.TravelMode[selectedMode],
+            },
+            (response, status) => {
+                if (status == "OK") {
+                    directionsRenderer.setDirections(response);
+                } else {
+                    window.alert("Directions request failed due to " + status);
+                }
+            }
+        );
     }
 
     $('#sidebarCollapse').on('click', function () {
         $('#sidebar').toggleClass('active');
     });
 </script>
+<!-- 
+{% for place in places %}
+<script>
+new google.maps.Marker({
+    lat: place.lat,
+    lng: place.lng,
+    map: map,
+});
+</script>
+{% endfor %} -->
 </body>
 </html>

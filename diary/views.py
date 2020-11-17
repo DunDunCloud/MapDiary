@@ -13,14 +13,9 @@ from django.core import serializers
 def index(request):
     user = request.user
     auth0user = request.user.social_auth.get(provider='auth0')
-    # place = get_object_or_404(Place, name='place')
-    # if user.is_authenticated:
-    #     return redirect(index)
-    # else:
     places = Place.objects.filter(writer=auth0user.uid)
-    jsonPlaces = serializers.serialize('json', places)
-    jsonp = json.dumps(jsonPlaces)
-    return render(request, 'index.html', {'user': user, 'user_status': True, 'places': places, 'jsonp': jsonp})
+    
+    return render(request, 'index.html', {'user': user, 'user_status': True, 'places': places})
 
 
 @login_required
@@ -53,10 +48,10 @@ def add_place(request):
             title = request.POST['title'],
             description = request.POST['description'],
             writer = request.user.social_auth.get(provider='auth0').uid,
+            place_name = request.POST['place_name'],
+            place_addr = request.POST['place_addr'],
             lat = request.POST['lat'],
-            lng = request.POST['lng'],
-            place_name = request.POST['place'],
-            place_addr = request.POST['address']
+            lng = request.POST['lng']
         )
         new_diary.save()
         print(new_diary)
