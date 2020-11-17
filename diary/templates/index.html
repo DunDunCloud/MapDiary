@@ -189,12 +189,14 @@
 <script>
     var lat_arr = new Array()
     var lng_arr = new Array()
+    var marker_id = new Array()
 </script>
 
 {% for place in places %}
 <script>
     lat_arr.push("{{place.lat}}"*1);
     lng_arr.push("{{place.lng}}"*1);
+    marker_id.push(("{{ place.id }}"))
 </script>
 {% endfor %}
 
@@ -261,6 +263,7 @@
             })
             console.log(lat_arr[i])
             console.log(lng_arr[i])
+            console.log(marker_id[i])
         }
 
         // 마커 생성 및 모달 띄우기 -유찬영
@@ -371,7 +374,7 @@
                     window.alert("가능한 경로가 없습니다.");
 
                 } else if (status == "INVALID_REQUEST") {
-                    window.alert("장소설정을 해주세요^^");
+                    window.alert("장소 설정을 해주세요");
                 }
                 else {
                     window.alert("Directions request failed due to " + status);
