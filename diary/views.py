@@ -48,8 +48,8 @@ def add_place(request):
             title = request.POST['title'],
             description = request.POST['description'],
             writer = request.user.social_auth.get(provider='auth0').uid,
-            place_name = request.POST['place_name'],
-            place_addr = request.POST['place_addr'],
+            place_name = request.POST['place'],
+            # place_addr = request.POST['place_addr'],
             lat = request.POST['lat'],
             lng = request.POST['lng']
         )

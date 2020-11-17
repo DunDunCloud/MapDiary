@@ -36,12 +36,8 @@
                 <a href="#Submenu{{ place.id }}" data-toggle="collapse" aria-expanded="true">{{ place.place_name }}</a>
                 <ul class="collapse list-unstyled" id="Submenu{{ place.id }}">
                     <li style="font-family: NR;margin-left: 10px;margin-right: 20px;">
-                        <a id="placedetail" type="button" data-toggle="modal" data-target=".placeModal" data-id="{{ place.id }}" style="text-align: center;font-size: 1.2em;text-decoration: none;color: whitesmoke;">{{ place.title }}</a>
-{#                            {% if user_status %}#}
-{#                                <img class="like" src="{% static 'like.png' %}" data-id="{{ place.id }}" alt="Image" style="cursor: pointer;float:right;width: 2.3rem;"></btn>#}
-{#                            {% else %}#}
-{#                                <img class="like" src="{% static 'dislike.png' %}" data-id="{{ place.id }}" alt="Image" style="cursor: pointer;float:right;width: 2.3rem;"></a>#}
-{#                            {% endif %}#}
+                        <a id="placedetail" class="place-detail-title" type="button" data-toggle="modal" data-target=".placeModal" data-id="{{ place.id }}" style="text-align: center;font-size: 1.2em;text-decoration: none;color: whitesmoke;" onMouseover="this.style.color='black';">{{ place.title }}</a>
+
                     </li>
                 </ul>
             </li>
@@ -50,23 +46,13 @@
         </ul>
 
         <ul class="list-unstyled CTAs">
-            <li><a href="#" class="download" style="font-family: NB; font-size: 1.5em">길찾기</a></li>
-           
-            <!-- 길찾기: 가는 방법 설정 -->
-            <div id="floating-panel">
-                <b>Mode of Travel: </b>
-                <select id="mode">
-                  <option value="DRIVING">Driving</option>
-                  <option value="WALKING">Walking</option>
-                  <option value="BICYCLING">Bicycling</option>
-                  <option value="TRANSIT">Transit</option>
-                </select>
-            </div>
+
             
             <!-- 길찾기: 출발지 설정 -->
-            <div id="floating-panel">
-                <b>출발지: </b>
-                <select id="dep_place">
+            <div id="floating-panel" style="color: #2C2C2C; font-family: NR;">
+                <p style="color: white;padding: 0;margin: 0;">출발지: </p>
+                <select class="custom-select" id="dep_place">
+                <option selected>출발지 선택</option>
                 {% for place in places %}
                   <option value="{{place.lat}},{{place.lng}}">{{place.place_name}}</option>
                 {% endfor %}
@@ -74,15 +60,18 @@
             </div>
 
             <!-- 길찾기: 도착지 설정 -->
-            <div id="floating-panel">
-                <b>도착지: </b>
-                <select id="dest_place">
+            <div id="floating-panel" style="color: #2C2C2C; font-family: NR;">
+                <p style="color: white;padding: 0;margin: 0;">도착지: </p>
+                <select class="custom-select" id="dest_place">
+                <option selected>도착지 선택</option>
                   {% for place in places %}
                     <option value="{{place.lat}},{{place.lng}}">{{place.place_name}}</option>
                   {% endfor %}
                 </select>
             </div>
-            <li><a href="#" class="article" style="font-family: NB">친구 추가</a></li>
+            <li><a id="find" class="download" style="font-family: NB; font-size: 1.5em;cursor: pointer;margin-top: 1rem;">길찾기</a></li>
+
+            <li><a href="#" class="article" style="font-family: NB;margin-top: 1rem;">친구 추가</a></li>
         </ul>
     </nav>
 
@@ -142,11 +131,10 @@
                             <label for="recipient-name" class="control-label">Title:</label>
                             <input type="text" class="form-control" id="recipient-name" name="title">
                             <!-- 장소명 -->
-                            <label for="recipient-name" class="control-label">Place Name:</label>
-                            <input type="text" class="form-control" id="recipient-name" name="place_name">
+
                             <!-- 주소 --> 
-                            <label for="recipient-name" class="control-label">Address:</label>
-                            <input type="text" class="form-control" id="recipient-name" name="place_addr">
+{#                            <label for="recipient-name" class="control-label">Address:</label>#}
+{#                            <input type="text" class="form-control" id="recipient-name" name="place_addr">#}
                             <!-- 글 내용 -->
                             <label for="message-text" class="control-label">Message:</label>
                             <textarea class="form-control" id="message-text" name="description"></textarea>
@@ -240,8 +228,7 @@
         });
 
         directionsRenderer.setMap(map);
-        // calculateAndDisplayRoute(directionsService, directionsRenderer);
-        document.getElementById("mode").addEventListener("change", () => {
+        $( '#find' ).click( function() {
             calculateAndDisplayRoute(directionsService, directionsRenderer);
         });
 
@@ -361,7 +348,7 @@
 
     //  길 찾기 함수
     function calculateAndDisplayRoute(directionsService, directionsRenderer) {
-        const selectedMode = document.getElementById("mode").value;
+        const selectedMode = 'TRANSIT';
         const dep_pos = document.getElementById("dep_place").value.split(",");
         const dest_pos = document.getElementById("dest_place").value.split(",");
 
@@ -377,7 +364,10 @@
             (response, status) => {
                 if (status == "OK") {
                     directionsRenderer.setDirections(response);
-                } else {
+                } else if (status == "INVALID_REQUEST") {
+                    window.alert("장소설정을 해주세요^^");
+                }
+                else {
                     window.alert("Directions request failed due to " + status);
                 }
             }
