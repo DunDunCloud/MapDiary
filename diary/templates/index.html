@@ -239,16 +239,18 @@
         };
 
         // 현재 위치 찾기
-        if (navigator.geolocation){
-            navigator.geolocation.getCurrentPosition(
-                function(pos) {
-                    const uluru = {lat: pos.coords.latitude, lng: pos.coords.longitude};
-                    // alert("현재 위치는 : " + uluru.lat + uluru.lng);
-                    map.setCenter(uluru);
-                });
-        }else {
-            alert('GPS를 지원하지 않습니다');
-        }
+        // if (navigator.geolocation){
+        //     navigator.geolocation.getCurrentPosition(
+        //         function(pos) {
+        //             const uluru = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+        //             // alert("현재 위치는 : " + uluru.lat + uluru.lng);
+        //             map.setCenter(uluru);
+        //         });
+        // }else {
+        //     alert('GPS를 지원하지 않습니다');
+        // }
+
+        map.setCenter({lat: 37.509554, lng: 127.055522});
 
         // 기존에 저장한 게시글에 맞는 마커 찍어주기
         for(var i = 0; i < lat_arr.length; i++){
@@ -364,6 +366,10 @@
             (response, status) => {
                 if (status == "OK") {
                     directionsRenderer.setDirections(response);
+                } 
+                else if(status == "ZERO_RESULTS") {
+                    window.alert("가능한 경로가 없습니다.");
+
                 } else if (status == "INVALID_REQUEST") {
                     window.alert("장소설정을 해주세요^^");
                 }
